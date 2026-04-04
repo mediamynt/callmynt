@@ -68,6 +68,54 @@ function fmt(seconds: number) {
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
+function ScriptPanel({ script, expandedSections, onToggleSection }: { 
+  script: { name: string; sections: Array<{ id: string; title: string; content: string }> } | null;
+  expandedSections: string[];
+  onToggleSection: (id: string) => void;
+}) {
+  if (!script) {
+    return (
+      <div style={{ background: C.sf, borderRadius: 12, padding: 16, border: `1px solid ${C.bd}`, marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Script</div>
+        <div style={{ fontSize: 13, color: C.t3 }}>No script assigned to this campaign</div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: C.sf, borderRadius: 12, border: `1px solid ${C.bd}`, marginBottom: 16, overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px', borderBottom: `1px solid ${C.bd}`, background: C.bg }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Script</div>
+        <div style={{ fontSize: 14, fontWeight: 600, marginTop: 2 }}>{script.name}</div>
+      </div>
+      <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+        {script.sections.map((section) => {
+          const isExpanded = expandedSections.includes(section.id);
+          return (
+            <div key={section.id} style={{ borderBottom: `1px solid ${C.rs}` }}>
+              <button
+                onClick={() => onToggleSection(section.id)}
+                style={{
+                  width: '100%', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 600 }}>{section.title}</span>
+                <span style={{ fontSize: 12, color: C.t3 }}>{isExpanded ? '▼' : '▶'}</span>
+              </button>
+              {isExpanded && (
+                <div style={{ padding: '0 16px 12px', fontSize: 13, color: C.t2, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                  {section.content}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function DialerPage() {
   const {
     phase,
@@ -116,6 +164,8 @@ export default function DialerPage() {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [submittingSample, setSubmittingSample] = useState(false);
   const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [script, setScript] = useState<{ name: string; sections: Array<{ id: string; title: string; content: string }> } | null>(null);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const { pushToast } = useToast();
 
   useEffect(() => {
@@ -173,6 +223,24 @@ export default function DialerPage() {
 
   async function handleChooseCampaign(campaign: Campaign) {
     setSelectedCampaign(campaign);
+    
+    // Load script for this campaign
+    const { data: scriptData } = await supabase
+      .from('scripts')
+      .select('name, sections')
+      .eq('campaign_id', campaign.id)
+      .maybeSingle();
+    
+    if (scriptData) {
+      setScript(scriptData);
+      // Expand first section by default
+      if (scriptData.sections?.length > 0) {
+        setExpandedSections([scriptData.sections[0].id]);
+      }
+    } else {
+      setScript(null);
+    }
+    
     await prepareCampaign(campaign);
   }
 
@@ -186,6 +254,14 @@ export default function DialerPage() {
   async function handleVmDrop() {
     setDisposition('Left VM');
     await endCall();
+  }
+
+  function toggleScriptSection(sectionId: string) {
+    setExpandedSections(prev => 
+      prev.includes(sectionId) 
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId]
+    );
   }
 
   async function handleSampleSubmit(payload: { sz: string; cl: string; ad: string }) {
@@ -442,6 +518,11 @@ export default function DialerPage() {
 
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
             {ErrorBanner}
+            <ScriptPanel 
+              script={script} 
+              expandedSections={expandedSections} 
+              onToggleSection={toggleScriptSection} 
+            />
             <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Notes</div>
             <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Type notes..." style={{ width: '100%', minHeight: 120, padding: 12, background: C.sf, border: `1px solid ${C.bd}`, borderRadius: 12, color: C.t1, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6, resize: 'vertical', outline: 'none' }} />
 
