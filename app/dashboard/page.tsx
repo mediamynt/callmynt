@@ -157,17 +157,16 @@ export default function DashboardPage() {
         setFreshLeads(coursesData || []);
       }
 
-      // Get today's stats
+      // Get today's stats (fetch all and filter in memory due to UUID type mismatch)
       const todayStart = `${today}T00:00:00`;
       const { data: callsData, error: callsErr } = await supabase
         .from("calls")
-        .select("status, duration_seconds, disposition")
-        .eq("agent_id", agentId)
+        .select("status, duration_seconds, disposition, agent_id")
         .gte("started_at", todayStart);
 
       if (callsErr) throw callsErr;
 
-      const calls = callsData || [];
+      const calls = (callsData || []).filter((c: any) => c.agent_id === agentId || !c.agent_id);
       const connects = calls.filter((c: { status: string }) => ["answered", "completed", "wrap_up"].includes(c.status)).length;
       const totalSeconds = calls.reduce((sum: number, c: { duration_seconds: number }) => sum + (c.duration_seconds || 0), 0);
       const callbacksScheduled = calls.filter((c: { disposition: string }) => c.disposition === "Call back").length;

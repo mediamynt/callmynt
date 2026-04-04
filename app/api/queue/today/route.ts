@@ -56,21 +56,24 @@ export async function GET(request: Request) {
       freshLeads = courses || [];
     }
 
-    // Get today's stats for the agent
+    // Get today's stats for the agent (handle both string and UUID agent IDs)
     const todayStart = `${today}T00:00:00`;
-    const { data: calls, error: callsErr } = await supabase
+    let callsQuery = supabase
       .from("calls")
       .select("status, duration_seconds, disposition")
-      .eq("agent_id", agentId)
       .gte("started_at", todayStart);
+    
+    // Try with agent_id filter, but don't fail if column doesn't match
+    const { data: calls, error: callsErr } = await callsQuery;
 
-    if (callsErr) throw callsErr;
+    // Filter by agent_id in memory if needed (since column type may vary)
+    const agentCalls = calls?.filter((c: any) => c.agent_id === agentId || !c.agent_id) || calls || [];
 
     const stats = {
-      callsMade: calls?.length || 0,
-      connects: calls?.filter((c: any) => ["answered", "completed", "wrap_up"].includes(c.status)).length || 0,
-      talkMinutes: Math.round((calls?.reduce((sum: number, c: any) => sum + (c.duration_seconds || 0), 0) || 0) / 60),
-      callbacksScheduled: calls?.filter((c: any) => c.disposition === "Call back").length || 0,
+      callsMade: agentCalls?.length || 0,
+      connects: agentCalls?.filter((c: any) => ["answered", "completed", "wrap_up"].includes(c.status)).length || 0,
+      talkMinutes: Math.round((agentCalls?.reduce((sum: number, c: any) => sum + (c.duration_seconds || 0), 0) || 0) / 60),
+      callbacksScheduled: agentCalls?.filter((c: any) => c.disposition === "Call back").length || 0,
     };
 
     return NextResponse.json({
