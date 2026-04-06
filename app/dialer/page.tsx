@@ -166,6 +166,7 @@ export default function DialerPage() {
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [script, setScript] = useState<{ name: string; sections: Array<{ id: string; title: string; content: string }> } | null>(null);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
+  const [dialingStatus, setDialingStatus] = useState<string | null>(null);
   const { pushToast } = useToast();
 
   useEffect(() => {
@@ -399,9 +400,22 @@ export default function DialerPage() {
             </div>
           ))}
         </div>
-        <button onClick={() => void startDialing()} disabled={!!error} style={{ padding: '16px 48px', borderRadius: 14, background: error ? C.ac : C.grn, border: 'none', color: 'white', fontSize: 16, fontWeight: 700, cursor: error ? 'not-allowed' : 'pointer', boxShadow: error ? 'none' : '0 4px 16px rgba(16,185,129,0.25)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+        {dialingStatus && (
+          <div style={{ marginBottom: 16, padding: '10px 20px', borderRadius: 10, background: dialingStatus.startsWith('Error') ? C.rD : C.bD, color: dialingStatus.startsWith('Error') ? C.rT : C.bT, fontSize: 13, fontWeight: 600 }}>
+            {dialingStatus}
+          </div>
+        )}
+        <button onClick={async () => {
+          try {
+            setDialingStatus('Requesting mic access...');
+            await startDialing();
+            setDialingStatus(null);
+          } catch (err: any) {
+            setDialingStatus(`Error: ${err.message || 'Failed to start dialing'}`);
+          }
+        }} disabled={!!error || dialingStatus === 'Requesting mic access...'} style={{ padding: '16px 48px', borderRadius: 14, background: error ? C.ac : C.grn, border: 'none', color: 'white', fontSize: 16, fontWeight: 700, cursor: error ? 'not-allowed' : 'pointer', boxShadow: error ? 'none' : '0 4px 16px rgba(16,185,129,0.25)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
           <I s={20} k="white" w={2.5}><polygon points="5 3 19 12 5 21 5 3" /></I>
-          Start Dialing
+          {dialingStatus === 'Requesting mic access...' ? 'Starting...' : 'Start Dialing'}
         </button>
         <button onClick={() => setSelectedCampaign(null)} style={{ marginTop: 16, background: 'none', border: 'none', color: C.t3, fontSize: 14, cursor: 'pointer', textDecoration: 'underline' }}>Change campaign</button>
       </div>
