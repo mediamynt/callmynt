@@ -530,45 +530,25 @@ export default function DialerPage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ flexShrink: 0, padding: '12px 20px', borderBottom: `1px solid ${C.bd}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: C.gD, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⛳</div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 16, fontWeight: 600 }}>{currentCourse.name}</span>
-                    <Pl sg={currentCourse.pipeline_stage} />
-                  </div>
-                  <div style={{ fontSize: 13, color: C.t2 }}>{quickCapture.buyer_name || currentCourse.buyer_name || `${currentCourse.city}, ${currentCourse.state}`}</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                {showGateToggle && (
-                  <div style={{ display: 'flex', background: C.rs, borderRadius: 10, padding: 3, gap: 3 }}>
-                    {(['gatekeeper', 'buyer'] as const).map((value) => (
-                      <button key={value} onClick={() => setMode(value)} style={{ padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer', background: mode === value ? (value === 'buyer' ? C.gD : C.aD) : 'transparent', color: mode === value ? (value === 'buyer' ? C.gT : C.aT) : C.t3 }}>
-                        {value === 'gatekeeper' ? 'Gatekeeper' : 'Buyer'}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <div style={{ textAlign: 'right' }}>
-                  <M c={C.grn} s={22}>{fmt(callDuration)}</M>
-                  <div style={{ fontSize: 10, color: C.t3 }}>{status === 'ringing' ? 'Ringing' : 'Live'}</div>
-                </div>
-              </div>
+          {/* Compact call header - single line */}
+          <div style={{ flexShrink: 0, padding: '6px 16px', borderBottom: `1px solid ${C.bd}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentCourse.name}</span>
+              <Pl sg={currentCourse.pipeline_stage} />
+              <span style={{ fontSize: 11, color: C.t3, whiteSpace: 'nowrap' }}>{displayPhone}</span>
             </div>
-            <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 12, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ color: C.t3 }}>Calling:</span>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: C.t1 }}>{displayPhone}</span>
-                <span style={{ color: C.t3 }}>— {phoneLabel}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ color: C.t3 }}>From:</span>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: C.t1 }}>{callerDisplay}</span>
-              </div>
-              {localTimeLabel && <div style={{ color: C.t3 }}>Local time: {localTimeLabel}</div>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+              {showGateToggle && (
+                <div style={{ display: 'flex', background: C.rs, borderRadius: 8, padding: 2, gap: 2 }}>
+                  {(['gatekeeper', 'buyer'] as const).map((value) => (
+                    <button key={value} onClick={() => setMode(value)} style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', background: mode === value ? (value === 'buyer' ? C.gD : C.aD) : 'transparent', color: mode === value ? (value === 'buyer' ? C.gT : C.aT) : C.t3 }}>
+                      {value === 'gatekeeper' ? 'Gate' : 'Buyer'}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <M c={C.grn} s={16}>{fmt(callDuration)}</M>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.grn }} />
             </div>
           </div>
 
