@@ -449,22 +449,19 @@ export default function DialerPage() {
     const callerDisplay = currentCallerId ? formatDisplayPhone(currentCallerId) : process.env.NEXT_PUBLIC_TWILIO_PHONE || '(801) 555-9999';
 
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '280px minmax(0,1fr) 280px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
         <div style={{ background: C.sf, borderRight: `1px solid ${C.bd}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{selectedCampaign.name}</div>
-            <M s={12} c={C.t3}>{Math.max(queue.length - currentIndex - 1, 0)} left</M>
+          <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedCampaign.name}</div>
+            <M s={11} c={C.t3}>{Math.max(queue.length - currentIndex - 1, 0)}</M>
           </div>
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {queue.slice(currentIndex).map((item, index) => (
-              <div key={item.id} style={{ padding: '10px 14px', borderBottom: `1px solid ${C.rs}`, background: index === 0 ? C.gD : 'transparent', borderLeft: index === 0 ? `3px solid ${C.grn}` : '3px solid transparent' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>{item.course.name}</span>
-                  {index === 0 && <M s={12} c={C.grn}>{fmt(callDuration)}</M>}
-                </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div key={item.id} style={{ padding: '6px 10px', borderBottom: `1px solid ${C.rs}`, background: index === 0 ? C.gD : 'transparent', borderLeft: index === 0 ? `3px solid ${C.grn}` : '3px solid transparent' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.course.name}</div>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginTop: 2 }}>
                   <Pl sg={item.course.pipeline_stage} />
-                  {item.course.buyer_name && <span style={{ fontSize: 11, color: C.t2 }}>{item.course.buyer_name}</span>}
+                  {index === 0 && <M s={11} c={C.grn}>{fmt(callDuration)}</M>}
                 </div>
               </div>
             ))}
