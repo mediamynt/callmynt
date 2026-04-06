@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     if (courseId) {
-      await supabase.from('callmynt_courses').update({
+      await supabase.from('courses').update({
         last_attempt_at: new Date().toISOString(),
         next_follow_up_at: reason === 'outside_calling_hours' ? nextDayIso() : null,
         updated_at: new Date().toISOString(),

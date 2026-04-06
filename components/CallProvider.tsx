@@ -377,7 +377,7 @@ export function CallProvider({ children, agentId }: { children: React.ReactNode;
 
   const saveQuickCapture = useCallback(async () => {
     if (!currentCourse) return;
-    await supabase.from('callmynt_courses').update({
+    await supabase.from('courses').update({
       buyer_name: state.quickCapture.buyer_name || null,
       buyer_title: state.quickCapture.buyer_title || null,
       buyer_direct_phone: state.quickCapture.buyer_direct_phone || null,
@@ -390,7 +390,7 @@ export function CallProvider({ children, agentId }: { children: React.ReactNode;
 
   const saveIvrShortcut = useCallback(async () => {
     if (!currentCourse) return;
-    await supabase.from('callmynt_courses').update({
+    await supabase.from('courses').update({
       ivr_pro_shop_key: state.quickCapture.ivr_pro_shop_key || null,
       ivr_notes: state.quickCapture.ivr_notes || null,
       ivr_direct_extension: state.quickCapture.ivr_direct_extension || null,

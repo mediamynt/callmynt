@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     });
 
     const sampleResult = await supabase
-      .from('sample_shipments')
+      .from('samples')
       .insert({
         course_id: body.courseId,
         call_id: body.callId || null,
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     if (sampleResult.error) throw sampleResult.error;
 
     await supabase
-      .from('callmynt_courses')
+      .from('courses')
       .update({
         pipeline_stage: 'sending_sample',
         buyer_name: body.buyerName,

@@ -98,7 +98,7 @@ export async function getCampaign(campaignId: string) {
 
 export async function getCourse(courseId: string) {
   const supabase = createServerClient();
-  const result = await supabase.from('callmynt_courses').select('*').eq('id', courseId).single();
+  const result = await supabase.from('courses').select('*').eq('id', courseId).single();
   if (result.error) throw result.error;
   return result.data as CallCourse;
 }
@@ -120,7 +120,7 @@ export async function getCourseByPhone(phone: string) {
     ])
     .join(',');
 
-  const result = await supabase.from('callmynt_courses').select('*').or(orClause).limit(1);
+  const result = await supabase.from('courses').select('*').or(orClause).limit(1);
   if (result.error) return null;
   return (result.data?.[0] || null) as CallCourse | null;
 }
@@ -200,7 +200,7 @@ export async function loadCampaignQueue(campaignId: string) {
     .map((row) => String(row.course_id || ''))
     .filter(Boolean);
 
-  const courseResult = await supabase.from('callmynt_courses').select('*').in('id', courseIds);
+  const courseResult = await supabase.from('courses').select('*').in('id', courseIds);
   if (courseResult.error) throw courseResult.error;
 
   const courseMap = new Map(
@@ -255,7 +255,7 @@ export async function createCallRecord(input: {
   if (callInsert.error) throw callInsert.error;
 
   await supabase
-    .from('callmynt_courses')
+    .from('courses')
     .update({
       total_attempts: (input.course.total_attempts || 0) + 1,
       last_attempt_at: new Date().toISOString(),
@@ -360,7 +360,7 @@ export async function applyDisposition(input: {
       courseUpdates.dnc = true;
     }
 
-    await supabase.from('callmynt_courses').update(courseUpdates).eq('id', courseId);
+    await supabase.from('courses').update(courseUpdates).eq('id', courseId);
   }
 
   if (input.queueId) {
@@ -391,7 +391,7 @@ export async function saveQuickCapture(courseId: string, payload: Record<string,
     updates.pipeline_stage = 'buyer_identified';
   }
 
-  const result = await supabase.from('callmynt_courses').update(updates).eq('id', courseId).select('*').single();
+  const result = await supabase.from('courses').update(updates).eq('id', courseId).select('*').single();
   if (result.error) throw result.error;
   return result.data;
 }

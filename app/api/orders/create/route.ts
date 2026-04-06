@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     if (insert.error) throw insert.error;
 
     await supabase
-      .from('callmynt_courses')
+      .from('courses')
       .update({
         pipeline_stage: 'first_order',
         total_orders: 1,

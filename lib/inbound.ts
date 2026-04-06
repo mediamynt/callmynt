@@ -76,7 +76,7 @@ export async function createCallbackQueueEntry(params: {
     .single();
 
   await supabase
-    .from('callmynt_courses')
+    .from('courses')
     .update({
       next_follow_up_at: scheduledAt,
       notes: params.notes || undefined,

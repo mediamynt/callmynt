@@ -7,9 +7,9 @@ type QueryResult<T> = {
 };
 
 export const TABLES = {
-  courses: ["callmynt_courses", "courses"],
-  orders: ["callmynt_orders", "orders"],
-  samples: ["sample_shipments"],
+  courses: ["courses"],
+  orders: ["orders"],
+  samples: ["samples"],
   calls: ["calls"],
   recordings: ["call_recordings"],
   transcripts: ["call_transcripts"],
@@ -158,7 +158,7 @@ export async function fetchCoursesForSelection() {
 
   while (hasMore) {
     const { data, error } = await supabase
-      .from('callmynt_courses')
+      .from('courses')
       .select('id, name, course_type, city, state, buyer_name, buyer_title, pipeline_stage, total_attempts, main_phone, pro_shop_phone')
       .order('name')
       .range(from, from + pageSize - 1);

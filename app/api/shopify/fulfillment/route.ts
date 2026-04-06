@@ -24,14 +24,14 @@ export async function POST(req: Request) {
     const supabase = createServerClient();
 
     const sample = await supabase
-      .from('sample_shipments')
+      .from('samples')
       .select('*')
       .eq('shopify_order_id', orderId)
       .maybeSingle();
 
     if (sample.data) {
       await supabase
-        .from('sample_shipments')
+        .from('samples')
         .update({
           status: 'shipped',
           shipped_at: shippedAt,
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         .eq('id', sample.data.id);
 
       await supabase
-        .from('callmynt_courses')
+        .from('courses')
         .update({
           pipeline_stage: 'sample_follow_up',
           next_follow_up_at: followUpDate,

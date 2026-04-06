@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     
     // Get overdue callbacks (next_follow_up_at < today)
     const { data: overdue, error: overdueErr } = await supabase
-      .from("callmynt_courses")
+      .from("courses")
       .select("*")
       .not("next_follow_up_at", "is", null)
       .lt("next_follow_up_at", today)
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
     // Get today's callbacks
     const { data: todayCallbacks, error: todayErr } = await supabase
-      .from("callmynt_courses")
+      .from("courses")
       .select("*")
       .not("next_follow_up_at", "is", null)
       .gte("next_follow_up_at", today)
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     if (queueItems && queueItems.length > 0) {
       const courseIds = queueItems.map((q: any) => q.course_id);
       const { data: courses } = await supabase
-        .from("callmynt_courses")
+        .from("courses")
         .select("*")
         .in("id", courseIds);
       freshLeads = courses || [];
