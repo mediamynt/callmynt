@@ -6,6 +6,7 @@ import { CallProvider } from "@/components/CallProvider";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 import { GlobalHoldQueueBanner } from "@/components/GlobalHoldQueueBanner";
 import { TopBarClient } from "@/components/layout/TopBarClient";
+import { HideOnDialer } from "@/components/layout/LayoutShell";
 
 export const metadata: Metadata = {
   title: "CallMynt",
@@ -197,11 +198,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               height: "100vh",
               display: "grid",
               gridTemplateColumns: "56px 1fr",
-              gridTemplateRows: "52px auto 1fr",
+              gridTemplateRows: "auto auto 1fr",
               overflow: "hidden",
             }}
           >
-          {/* TOPBAR */}
+          {/* TOPBAR - hidden on dialer page for max screen space */}
+          <HideOnDialer>
           <div
             style={{
               gridColumn: "1/-1",
@@ -247,6 +249,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <TopBarClient />
           </div>
+          </HideOnDialer>
 
           <CallProvider agentId="agent-1">
             <GlobalHoldQueueBanner />
