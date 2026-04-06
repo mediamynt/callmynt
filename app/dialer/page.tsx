@@ -224,20 +224,24 @@ export default function DialerPage() {
   async function handleChooseCampaign(campaign: Campaign) {
     setSelectedCampaign(campaign);
     
-    // Load script for this campaign
-    const { data: scriptData } = await supabase
-      .from('scripts')
-      .select('name, sections')
-      .eq('campaign_id', campaign.id)
-      .maybeSingle();
-    
-    if (scriptData) {
-      setScript(scriptData);
-      // Expand first section by default
-      if (scriptData.sections?.length > 0) {
-        setExpandedSections([scriptData.sections[0].id]);
+    // Load script for this campaign (non-blocking — don't let script errors break dialing)
+    try {
+      const { data: scriptData } = await supabase
+        .from('scripts')
+        .select('name, sections')
+        .eq('campaign_id', campaign.id)
+        .maybeSingle();
+      
+      if (scriptData) {
+        setScript(scriptData);
+        if (scriptData.sections?.length > 0) {
+          setExpandedSections([scriptData.sections[0].id]);
+        }
+      } else {
+        setScript(null);
       }
-    } else {
+    } catch {
+      // Scripts table may not exist yet — that's fine, dialer still works
       setScript(null);
     }
     
