@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { CallProvider } from "@/components/CallProvider";
-import { CallBar } from "@/components/CallBar";
+
 import { ToastProvider } from "@/components/providers/ToastProvider";
 import { GlobalHoldQueueBanner } from "@/components/GlobalHoldQueueBanner";
 import { TopBarClient } from "@/components/layout/TopBarClient";
@@ -311,7 +311,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             {/* MAIN */}
-            <CallBar />
             <div style={{ overflow: "hidden", background: C.bg, height: "100%" }}>{children}</div>
           </CallProvider>
           </div>
