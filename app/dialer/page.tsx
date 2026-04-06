@@ -9,6 +9,7 @@ import { useCall } from '@/components/CallProvider';
 import { SampleModal } from '@/components/modals/SampleModal';
 import { OrderModal } from '@/components/modals/OrderModal';
 import { useToast } from '@/components/providers/ToastProvider';
+import { CourseDetailPanel } from '@/components/CourseDetailPanel';
 
 type Campaign = {
   id: string;
@@ -468,43 +469,9 @@ export default function DialerPage() {
           </div>
         </div>
 
-        {/* Right: Lead info visible while dialing */}
-        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflowY: 'auto' }}>
-          {currentCourse && (
-            <>
-            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
-              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Course</div>
-              {[
-                ['Name', currentCourse.name],
-                ['City', `${currentCourse.city || '\u2014'}, ${currentCourse.state || '\u2014'}`],
-                ['Phone', currentCourse.main_phone || '\u2014'],
-                ['Pro shop', currentCourse.pro_shop_phone || '\u2014'],
-              ].map(([label, value], index, items) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
-                  <span style={{ color: C.t3 }}>{label}</span>
-                  <span style={{ fontWeight: 500, color: (label as string).includes('Phone') ? C.blu : C.t1 }}>{value}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Buyer</div>
-              {[
-                ['Name', currentCourse.buyer_name || 'Unknown'],
-                ['Title', currentCourse.buyer_title || '\u2014'],
-                ['Direct', currentCourse.buyer_direct_phone || '\u2014'],
-              ].map(([label, value], index, items) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
-                  <span style={{ color: C.t3 }}>{label}</span>
-                  <span style={{ fontWeight: 500, color: C.t1 }}>{value}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ padding: '14px 18px' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>History</div>
-              <div style={{ fontSize: 13, color: C.t3 }}>{currentCourse.total_attempts || 0} previous attempts</div>
-            </div>
-            </>
-          )}
+        {/* Right: Full course detail panel for prep */}
+        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflow: 'hidden' }}>
+          {currentCourse && <CourseDetailPanel courseId={currentCourse.id} />}
         </div>
       </div>
     );
@@ -640,39 +607,9 @@ export default function DialerPage() {
           </div>
         </div>
 
-        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflowY: 'auto' }}>
-          <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Course</div>
-            {[
-              ['Name', currentCourse.name],
-              ['City', `${currentCourse.city || '—'}, ${currentCourse.state || '—'}`],
-              ['Phone', currentCourse.main_phone || '—'],
-              ['Pro shop', currentCourse.pro_shop_phone || '—'],
-            ].map(([label, value], index, items) => (
-              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
-                <span style={{ color: C.t3 }}>{label}</span>
-                <span style={{ fontWeight: 500, color: label.includes('Phone') ? C.blu : C.t1 }}>{value}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Buyer</div>
-            {[
-              ['Name', quickCapture.buyer_name || currentCourse.buyer_name || 'Unknown'],
-              ['Title', quickCapture.buyer_title || currentCourse.buyer_title || '—'],
-              ['Direct', quickCapture.buyer_direct_phone || currentCourse.buyer_direct_phone || '—'],
-            ].map(([label, value], index, items) => (
-              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
-                <span style={{ color: C.t3 }}>{label}</span>
-                <span style={{ fontWeight: 500, color: C.t1 }}>{value}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ padding: '14px 18px' }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>History</div>
-            <div style={{ fontSize: 13, color: C.t3 }}>{currentCourse.total_attempts || 0} previous attempts</div>
-            {currentCallId && <div style={{ fontSize: 12, color: C.t2, marginTop: 8 }}>Call ID: <M s={12}>{currentCallId.slice(0, 8)}</M></div>}
-          </div>
+        {/* Right: Full course detail panel */}
+        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflow: 'hidden' }}>
+          <CourseDetailPanel courseId={currentCourse.id} />
         </div>
 
         {showDialpad && (
@@ -784,44 +721,9 @@ export default function DialerPage() {
           </div>
         </div>
 
-        {/* Right: Lead info (same as CONNECTED) */}
-        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflowY: 'auto' }}>
-          {currentCourse && (
-            <>
-            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
-              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Course</div>
-              {[
-                ['Name', currentCourse.name],
-                ['City', `${currentCourse.city || '—'}, ${currentCourse.state || '—'}`],
-                ['Phone', currentCourse.main_phone || '—'],
-                ['Pro shop', currentCourse.pro_shop_phone || '—'],
-              ].map(([label, value], index, items) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
-                  <span style={{ color: C.t3 }}>{label}</span>
-                  <span style={{ fontWeight: 500, color: (label as string).includes('Phone') ? C.blu : C.t1 }}>{value}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Buyer</div>
-              {[
-                ['Name', quickCapture.buyer_name || currentCourse.buyer_name || 'Unknown'],
-                ['Title', quickCapture.buyer_title || currentCourse.buyer_title || '—'],
-                ['Direct', quickCapture.buyer_direct_phone || currentCourse.buyer_direct_phone || '—'],
-              ].map(([label, value], index, items) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
-                  <span style={{ color: C.t3 }}>{label}</span>
-                  <span style={{ fontWeight: 500, color: C.t1 }}>{value}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ padding: '14px 18px' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>History</div>
-              <div style={{ fontSize: 13, color: C.t3 }}>{currentCourse.total_attempts || 0} previous attempts</div>
-              {currentCallId && <div style={{ fontSize: 12, color: C.t2, marginTop: 8 }}>Call ID: <M s={12}>{currentCallId.slice(0, 8)}</M></div>}
-            </div>
-            </>
-          )}
+        {/* Right: Full course detail panel */}
+        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflow: 'hidden' }}>
+          {currentCourse && <CourseDetailPanel courseId={currentCourse.id} />}
         </div>
       </div>
       {showSampleModal && currentCourse ? (
