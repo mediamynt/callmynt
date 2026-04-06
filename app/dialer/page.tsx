@@ -428,17 +428,78 @@ export default function DialerPage() {
 
   if (phase === 'DIALING' || phase === 'RINGING') {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 56px)', padding: 32, textAlign: 'center', background: C.bg }}>
-        {ErrorBanner}
-        <div style={{ fontSize: 14, fontWeight: 600, color: phase === 'RINGING' ? C.grn : C.bT, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>{phase === 'RINGING' ? 'Ringing...' : 'Dialing...'}</div>
-        <div style={{ width: 72, height: 72, borderRadius: '50%', background: phase === 'RINGING' ? C.gD : C.bD, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, marginBottom: 16, border: `3px solid ${phase === 'RINGING' ? C.gB : C.bB}` }}>⛳</div>
-        <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{currentCourse?.name}</div>
-        <div style={{ fontSize: 15, color: C.t2, marginBottom: 6 }}>{currentCourse?.buyer_name || 'Unknown buyer'}</div>
-        <div style={{ fontSize: 13, color: C.t3, marginBottom: 12 }}>Calling: {displayPhone} · {phoneLabel}</div>
-        <Pl sg={currentCourse?.pipeline_stage} />
-        <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-          <Btn onClick={() => void pauseDialer()}>Pause</Btn>
-          <Btn danger onClick={() => void endCall()}>Stop</Btn>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
+        {/* Left: Queue */}
+        <div style={{ background: C.sf, borderRight: `1px solid ${C.bd}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedCampaign.name}</div>
+            <M s={11} c={C.t3}>{Math.max(queue.length - currentIndex - 1, 0)}</M>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {queue.slice(currentIndex).map((item, index) => (
+              <div key={item.id} style={{ padding: '6px 10px', borderBottom: `1px solid ${C.rs}`, background: index === 0 ? C.bD : 'transparent', borderLeft: index === 0 ? `3px solid ${C.blu}` : '3px solid transparent' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.course.name}</div>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginTop: 2 }}>
+                  <Pl sg={item.course.pipeline_stage} />
+                  {index === 0 && <span style={{ fontSize: 10, fontWeight: 600, color: C.blu }}>{phase === 'RINGING' ? 'RINGING' : 'DIALING'}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Center: Dialing status */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}>
+          {ErrorBanner}
+          <div style={{ fontSize: 14, fontWeight: 600, color: phase === 'RINGING' ? C.grn : C.bT, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>{phase === 'RINGING' ? 'Ringing...' : 'Dialing...'}</div>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: phase === 'RINGING' ? C.gD : C.bD, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, marginBottom: 16, border: `3px solid ${phase === 'RINGING' ? C.gB : C.bB}` }}>⛳</div>
+          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{currentCourse?.name}</div>
+          <div style={{ fontSize: 15, color: C.t2, marginBottom: 6 }}>{currentCourse?.buyer_name || 'Unknown buyer'}</div>
+          <div style={{ fontSize: 13, color: C.t3, marginBottom: 12 }}>Calling: {displayPhone} · {phoneLabel}</div>
+          <Pl sg={currentCourse?.pipeline_stage} />
+          <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+            <Btn onClick={() => void pauseDialer()}>Pause</Btn>
+            <Btn danger onClick={() => void endCall()}>Stop</Btn>
+          </div>
+        </div>
+
+        {/* Right: Lead info visible while dialing */}
+        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflowY: 'auto' }}>
+          {currentCourse && (
+            <>
+            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Course</div>
+              {[
+                ['Name', currentCourse.name],
+                ['City', `${currentCourse.city || '\u2014'}, ${currentCourse.state || '\u2014'}`],
+                ['Phone', currentCourse.main_phone || '\u2014'],
+                ['Pro shop', currentCourse.pro_shop_phone || '\u2014'],
+              ].map(([label, value], index, items) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
+                  <span style={{ color: C.t3 }}>{label}</span>
+                  <span style={{ fontWeight: 500, color: (label as string).includes('Phone') ? C.blu : C.t1 }}>{value}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Buyer</div>
+              {[
+                ['Name', currentCourse.buyer_name || 'Unknown'],
+                ['Title', currentCourse.buyer_title || '\u2014'],
+                ['Direct', currentCourse.buyer_direct_phone || '\u2014'],
+              ].map(([label, value], index, items) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
+                  <span style={{ color: C.t3 }}>{label}</span>
+                  <span style={{ fontWeight: 500, color: C.t1 }}>{value}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '14px 18px' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>History</div>
+              <div style={{ fontSize: 13, color: C.t3 }}>{currentCourse.total_attempts || 0} previous attempts</div>
+            </div>
+            </>
+          )}
         </div>
       </div>
     );
@@ -659,43 +720,124 @@ export default function DialerPage() {
   if (phase === 'WRAP-UP') {
     return (
       <>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 56px)', padding: 32, textAlign: 'center', background: C.bg }}>
-        {ErrorBanner}
-        <div style={{ width: 64, height: 64, borderRadius: '50%', background: disposition ? C.gD : C.aD, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-          {disposition ? <I s={28} k={C.grn}><polyline points="20 6 9 17 4 12" /></I> : <I s={28} k={C.amb}><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></I>}
-        </div>
-        <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{disposition ? 'Call complete' : 'Set disposition'}</div>
-        <div style={{ fontSize: 15, color: C.t2, marginBottom: 6 }}>{currentCourse?.name || selectedCampaign.name}</div>
-        {disposition ? <div style={{ fontSize: 14, color: C.grn, fontWeight: 600, marginBottom: 16 }}>Outcome: {disposition}</div> : null}
-        {!disposition && (
-          <div style={{ width: '100%', maxWidth: 360, marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {dispositions.map((item, index) => (
-              <button key={`${item.l}-${index}`} onClick={() => {
-                if (item.l === 'Sending sample') {
-                  setShowSampleModal(true);
-                  return;
-                }
-                if (item.l === 'Placing order!') {
-                  setShowOrderModal(true);
-                  return;
-                }
-                setDisposition(item.l);
-              }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, border: `1.5px solid ${item.p ? `${item.c}55` : C.bd}`, background: item.p ? `${item.c}08` : C.bg, color: C.t1, fontSize: 14, fontWeight: item.p ? 600 : 500, cursor: 'pointer', textAlign: 'left', width: '100%' }}>
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.c }} />
-                <div style={{ flex: 1 }}>
-                  <div>{item.l}</div>
-                  <div style={{ fontSize: 12, color: C.t3 }}>{item.a}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
+        {/* Left: Queue */}
+        <div style={{ background: C.sf, borderRight: `1px solid ${C.bd}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedCampaign.name}</div>
+            <M s={11} c={C.t3}>{Math.max(queue.length - currentIndex - 1, 0)}</M>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {queue.slice(currentIndex).map((item, index) => (
+              <div key={item.id} style={{ padding: '6px 10px', borderBottom: `1px solid ${C.rs}`, background: index === 0 ? C.aD : 'transparent', borderLeft: index === 0 ? `3px solid ${C.amb}` : '3px solid transparent' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.course.name}</div>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginTop: 2 }}>
+                  <Pl sg={item.course.pipeline_stage} />
+                  {index === 0 && <span style={{ fontSize: 10, fontWeight: 600, color: C.amb }}>WRAP-UP</span>}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
-        )}
-        {disposition && (
-          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-            <Btn primary onClick={() => void handleDialNextNow()}>Dial next</Btn>
-            <Btn onClick={() => void pauseDialer()}>Pause</Btn>
+        </div>
+
+        {/* Center: Notes + Disposition */}
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {/* Header - call ended banner */}
+          <div style={{ flexShrink: 0, padding: '10px 20px', borderBottom: `1px solid ${C.bd}`, background: C.aD }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>⛳</div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 15, fontWeight: 600 }}>{currentCourse?.name || 'Unknown'}</span>
+                    {currentCourse && <Pl sg={currentCourse.pipeline_stage} />}
+                  </div>
+                  <div style={{ fontSize: 12, color: C.aT }}>{quickCapture.buyer_name || currentCourse?.buyer_name || 'Unknown buyer'}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.aT, padding: '4px 10px', background: C.bg, borderRadius: 8 }}>Call Ended · {fmt(callDuration)}</span>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Notes + Disposition area */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+            {ErrorBanner}
+
+            {/* Notes */}
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Notes</div>
+            <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Type notes about this call..." style={{ width: '100%', minHeight: 120, padding: 12, background: C.sf, border: `1px solid ${C.bd}`, borderRadius: 12, color: C.t1, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6, resize: 'vertical', outline: 'none' }} />
+
+            {/* Disposition */}
+            <div style={{ marginTop: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Disposition</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {dispositions.map((item, index) => (
+                  <button key={`${item.l}-${index}`} onClick={() => {
+                    if (item.l === 'Sending sample') { setShowSampleModal(true); return; }
+                    if (item.l === 'Placing order!') { setShowOrderModal(true); return; }
+                    setDisposition(item.l);
+                  }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 12, border: `1.5px solid ${disposition === item.l ? item.c : item.p ? `${item.c}55` : C.bd}`, background: disposition === item.l ? `${item.c}12` : item.p ? `${item.c}08` : C.bg, color: C.t1, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.c }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600 }}>{item.l}</div>
+                      <div style={{ fontSize: 11, color: C.t3 }}>{item.a}</div>
+                    </div>
+                    {item.p ? <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 6, background: `${item.c}18`, color: item.c, fontWeight: 700 }}>WIN</span> : null}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom action bar */}
+          <div style={{ flexShrink: 0, padding: '14px 24px 16px', background: C.sf, borderTop: `2px solid ${C.bd}`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            <Btn primary onClick={() => void handleDialNextNow()} disabled={!disposition}>Dial Next →</Btn>
+            <Btn onClick={() => void pauseDialer()}>Pause</Btn>
+            <Btn onClick={() => setSelectedCampaign(null)}>End Session</Btn>
+          </div>
+        </div>
+
+        {/* Right: Lead info (same as CONNECTED) */}
+        <div style={{ background: C.sf, borderLeft: `1px solid ${C.bd}`, overflowY: 'auto' }}>
+          {currentCourse && (
+            <>
+            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Course</div>
+              {[
+                ['Name', currentCourse.name],
+                ['City', `${currentCourse.city || '—'}, ${currentCourse.state || '—'}`],
+                ['Phone', currentCourse.main_phone || '—'],
+                ['Pro shop', currentCourse.pro_shop_phone || '—'],
+              ].map(([label, value], index, items) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
+                  <span style={{ color: C.t3 }}>{label}</span>
+                  <span style={{ fontWeight: 500, color: (label as string).includes('Phone') ? C.blu : C.t1 }}>{value}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.bd}` }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Buyer</div>
+              {[
+                ['Name', quickCapture.buyer_name || currentCourse.buyer_name || 'Unknown'],
+                ['Title', quickCapture.buyer_title || currentCourse.buyer_title || '—'],
+                ['Direct', quickCapture.buyer_direct_phone || currentCourse.buyer_direct_phone || '—'],
+              ].map(([label, value], index, items) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index === items.length - 1 ? 'none' : `1px solid ${C.rs}`, fontSize: 14 }}>
+                  <span style={{ color: C.t3 }}>{label}</span>
+                  <span style={{ fontWeight: 500, color: C.t1 }}>{value}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '14px 18px' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>History</div>
+              <div style={{ fontSize: 13, color: C.t3 }}>{currentCourse.total_attempts || 0} previous attempts</div>
+              {currentCallId && <div style={{ fontSize: 12, color: C.t2, marginTop: 8 }}>Call ID: <M s={12}>{currentCallId.slice(0, 8)}</M></div>}
+            </div>
+            </>
+          )}
+        </div>
       </div>
       {showSampleModal && currentCourse ? (
         <SampleModal
