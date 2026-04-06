@@ -384,6 +384,10 @@ export default function DialerPage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 56px)', padding: 32, textAlign: 'center', background: C.bg }}>
         {ErrorBanner}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: status === 'ready' ? C.grn : status === 'offline' ? C.red : C.amb }} />
+          <span style={{ fontSize: 12, color: C.t3 }}>Phone: {status === 'ready' ? 'Connected' : status === 'offline' ? 'Disconnected — check browser console' : status}</span>
+        </div>
         <div style={{ fontSize: 13, fontWeight: 600, color: C.t3, textTransform: 'uppercase', marginBottom: 8 }}>Campaign loaded</div>
         <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{selectedCampaign.name}</div>
         <div style={{ fontSize: 15, color: C.t2, marginBottom: 24 }}>{queue.length} courses · {selectedCampaign.dialer_mode} dialing</div>
