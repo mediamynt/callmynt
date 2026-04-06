@@ -399,9 +399,9 @@ export default function DialerPage() {
             </div>
           ))}
         </div>
-        <button onClick={() => void startDialing()} disabled={!!error} style={{ width: 180, height: 180, borderRadius: '50%', background: error ? C.ac : 'linear-gradient(135deg,#10B981,#059669)', border: 'none', color: 'white', fontSize: 22, fontWeight: 700, cursor: error ? 'not-allowed' : 'pointer', boxShadow: error ? 'none' : '0 8px 32px rgba(16,185,129,0.35)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <I s={40} k="white" w={2.5}><polygon points="5 3 19 12 5 21 5 3" /></I>
-          Start dialing
+        <button onClick={() => void startDialing()} disabled={!!error} style={{ padding: '16px 48px', borderRadius: 14, background: error ? C.ac : C.grn, border: 'none', color: 'white', fontSize: 16, fontWeight: 700, cursor: error ? 'not-allowed' : 'pointer', boxShadow: error ? 'none' : '0 4px 16px rgba(16,185,129,0.25)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+          <I s={20} k="white" w={2.5}><polygon points="5 3 19 12 5 21 5 3" /></I>
+          Start Dialing
         </button>
         <button onClick={() => setSelectedCampaign(null)} style={{ marginTop: 16, background: 'none', border: 'none', color: C.t3, fontSize: 14, cursor: 'pointer', textDecoration: 'underline' }}>Change campaign</button>
       </div>
