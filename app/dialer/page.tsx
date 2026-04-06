@@ -167,6 +167,7 @@ export default function DialerPage() {
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [script, setScript] = useState<{ name: string; sections: Array<{ id: string; title: string; content: string }> } | null>(null);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
+  const [showDispositions, setShowDispositions] = useState(false);
   const [dialingStatus, setDialingStatus] = useState<string | null>(null);
   const { pushToast } = useToast();
 
@@ -460,6 +461,7 @@ export default function DialerPage() {
               <span style={{ fontSize: 12, color: C.t3 }}>{displayPhone}</span>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
+              <Btn onClick={() => void skipCurrent('skip')}>Skip</Btn>
               <Btn onClick={() => void pauseDialer()}>Pause</Btn>
               <Btn danger onClick={() => void endCall()}>Stop</Btn>
             </div>
@@ -561,8 +563,10 @@ export default function DialerPage() {
             <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Type notes..." style={{ width: '100%', minHeight: 120, padding: 12, background: C.sf, border: `1px solid ${C.bd}`, borderRadius: 12, color: C.t1, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6, resize: 'vertical', outline: 'none' }} />
 
             <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Disposition</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <button onClick={() => setShowDispositions(v => !v)} style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: showDispositions ? 10 : 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                Disposition {showDispositions ? '▾' : '▸'}
+              </button>
+              {showDispositions && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {dispositions.map((item, index) => (
                   <button key={`${item.l}-${index}`} onClick={() => {
                     if (item.l === 'Sending sample') {
@@ -583,7 +587,7 @@ export default function DialerPage() {
                     {item.p ? <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 6, background: `${item.c}18`, color: item.c, fontWeight: 700 }}>WIN</span> : null}
                   </button>
                 ))}
-              </div>
+              </div>}
             </div>
           </div>
 
