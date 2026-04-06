@@ -367,7 +367,7 @@ export default function DialerPage() {
           {campaigns.map((campaign) => (
             <button key={campaign.id} onClick={() => void handleChooseCampaign(campaign)} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', borderRadius: 14, border: `1.5px solid ${C.bd}`, background: C.bg, cursor: 'pointer', textAlign: 'left', width: '100%' }}>
               <div style={{ width: 44, height: 44, borderRadius: 12, background: STG[campaign.pipeline_stage]?.bg || C.sf, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                {STG[campaign.pipeline_stage]?.ic || '⛳'}
+                {STG[campaign.pipeline_stage]?.l || 'Campaign'}
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 15, fontWeight: 600 }}>{campaign.name}</div>
@@ -670,7 +670,7 @@ export default function DialerPage() {
           <div style={{ flexShrink: 0, padding: '10px 20px', borderBottom: `1px solid ${C.bd}`, background: C.aD }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>⛳</div>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: C.t3 }}>{currentCourse.state || 'US'}</div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 15, fontWeight: 600 }}>{currentCourse?.name || 'Unknown'}</span>

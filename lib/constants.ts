@@ -59,12 +59,12 @@ export const C = {
 
 // Stage definitions
 export const STG: Record<string, { l: string; c: string; bg: string; bd: string; ic: string }> = {
-  cold_list: { l: 'Cold list', c: C.t3, bg: C.rs, bd: C.bd, ic: '📞' },
-  buyer_identified: { l: "Buyer ID'd", c: C.bT, bg: C.bD, bd: C.bB, ic: '🎯' },
-  sending_sample: { l: 'Sent', c: C.pT, bg: C.pD, bd: C.pB, ic: '📦' },
-  sample_follow_up: { l: 'Follow up', c: C.oT, bg: C.oD, bd: C.oB, ic: '🔥' },
-  first_order: { l: 'Ordered', c: C.gT, bg: C.gD, bd: C.gB, ic: '✅' },
-  reorder: { l: 'Reorder', c: '#0E7490', bg: '#ECFEFF', bd: '#A5F3FC', ic: '🔄' },
+  cold_list: { l: 'Cold list', c: C.t3, bg: C.rs, bd: C.bd, ic: '' },
+  buyer_identified: { l: "Buyer ID'd", c: C.bT, bg: C.bD, bd: C.bB, ic: '' },
+  sending_sample: { l: 'Sent', c: C.pT, bg: C.pD, bd: C.pB, ic: '' },
+  sample_follow_up: { l: 'Follow up', c: C.oT, bg: C.oD, bd: C.oB, ic: '' },
+  first_order: { l: 'Ordered', c: C.gT, bg: C.gD, bd: C.gB, ic: '' },
+  reorder: { l: 'Reorder', c: '#0E7490', bg: '#ECFEFF', bd: '#A5F3FC', ic: '' },
 };
 
 // Disposition options
