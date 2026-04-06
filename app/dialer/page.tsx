@@ -670,7 +670,7 @@ export default function DialerPage() {
           <div style={{ flexShrink: 0, padding: '10px 20px', borderBottom: `1px solid ${C.bd}`, background: C.aD }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: C.t3 }}>{currentCourse.state || 'US'}</div>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: C.t3 }}>{currentCourse?.state || 'US'}</div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 15, fontWeight: 600 }}>{currentCourse?.name || 'Unknown'}</span>
