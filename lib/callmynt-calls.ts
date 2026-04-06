@@ -159,6 +159,18 @@ export async function getCallerIdForCourse(course: CallCourse, campaign?: Campai
 
 export async function loadCampaignQueue(campaignId: string) {
   const supabase = createServerClient();
+
+  // Get courses that were already called today (have a call record with a disposition)
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const { data: todayCalls } = await supabase
+    .from('calls')
+    .select('course_id')
+    .eq('campaign_id', campaignId)
+    .not('disposition', 'is', null)
+    .gte('created_at', todayStart.toISOString());
+  const calledCourseIds = new Set((todayCalls || []).map((c: { course_id: string }) => c.course_id));
+
   const queueResult = await supabase
     .from('campaign_queue')
     .select('*')
@@ -170,7 +182,9 @@ export async function loadCampaignQueue(campaignId: string) {
 
   if (queueResult.error) throw queueResult.error;
 
-  const queueRows = (queueResult.data || []) as Array<Record<string, unknown>>;
+  const allQueueRows = (queueResult.data || []) as Array<Record<string, unknown>>;
+  // Filter out courses already called today with a disposition
+  const queueRows = allQueueRows.filter((row) => !calledCourseIds.has(String(row.course_id || '')));
   if (queueRows.length === 0) return [] as QueueItem[];
 
   const courseIds = queueRows
@@ -345,6 +359,13 @@ export async function applyDisposition(input: {
       .from('campaign_queue')
       .update({ status: 'completed' })
       .eq('id', input.queueId);
+  } else if (courseId) {
+    // Fallback: mark queue item completed by course_id if queueId wasn't passed
+    await supabase
+      .from('campaign_queue')
+      .update({ status: 'completed' })
+      .eq('course_id', courseId)
+      .in('status', ['queued', 'retry', 'paused', 'ready']);
   }
 
   return updatedCall.data;
