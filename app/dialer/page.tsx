@@ -382,7 +382,7 @@ export default function DialerPage() {
 
   if (phase === 'READY') {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 56px)', padding: 32, textAlign: 'center', background: C.bg }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: 32, textAlign: 'center', background: C.bg }}>
         {ErrorBanner}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: status === 'ready' ? C.grn : status === 'offline' ? C.red : C.amb }} />
@@ -428,7 +428,7 @@ export default function DialerPage() {
 
   if (phase === 'DIALING' || phase === 'RINGING') {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: '100vh', overflow: 'hidden', background: C.bg }}>
         {/* Left: Queue */}
         <div style={{ background: C.sf, borderRight: `1px solid ${C.bd}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -448,18 +448,23 @@ export default function DialerPage() {
           </div>
         </div>
 
-        {/* Center: Dialing status */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}>
+        {/* Center: Status bar + notes area for prep */}
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ flexShrink: 0, padding: '6px 16px', borderBottom: `1px solid ${C.bd}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, background: phase === 'RINGING' ? C.gD : C.bD }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: phase === 'RINGING' ? C.gT : C.bT }}>{phase === 'RINGING' ? 'Ringing' : 'Dialing'}...</span>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>{currentCourse?.name}</span>
+              <span style={{ fontSize: 12, color: C.t3 }}>{displayPhone}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Btn onClick={() => void pauseDialer()}>Pause</Btn>
+              <Btn danger onClick={() => void endCall()}>Stop</Btn>
+            </div>
+          </div>
           {ErrorBanner}
-          <div style={{ fontSize: 14, fontWeight: 600, color: phase === 'RINGING' ? C.grn : C.bT, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>{phase === 'RINGING' ? 'Ringing...' : 'Dialing...'}</div>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: phase === 'RINGING' ? C.gD : C.bD, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, marginBottom: 16, border: `3px solid ${phase === 'RINGING' ? C.gB : C.bB}` }}>⛳</div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{currentCourse?.name}</div>
-          <div style={{ fontSize: 15, color: C.t2, marginBottom: 6 }}>{currentCourse?.buyer_name || 'Unknown buyer'}</div>
-          <div style={{ fontSize: 13, color: C.t3, marginBottom: 12 }}>Calling: {displayPhone} · {phoneLabel}</div>
-          <Pl sg={currentCourse?.pipeline_stage} />
-          <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-            <Btn onClick={() => void pauseDialer()}>Pause</Btn>
-            <Btn danger onClick={() => void endCall()}>Stop</Btn>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Prep Notes</div>
+            <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Prep notes while it rings..." style={{ width: '100%', minHeight: 120, padding: 12, background: C.sf, border: `1px solid ${C.bd}`, borderRadius: 12, color: C.t1, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6, resize: 'vertical', outline: 'none' }} />
           </div>
         </div>
 
@@ -510,7 +515,7 @@ export default function DialerPage() {
     const callerDisplay = currentCallerId ? formatDisplayPhone(currentCallerId) : process.env.NEXT_PUBLIC_TWILIO_PHONE || '(801) 555-9999';
 
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: '100vh', overflow: 'hidden', background: C.bg }}>
         <div style={{ background: C.sf, borderRight: `1px solid ${C.bd}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedCampaign.name}</div>
@@ -700,7 +705,7 @@ export default function DialerPage() {
   if (phase === 'WRAP-UP') {
     return (
       <>
-      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: 'calc(100vh - 56px)', overflow: 'hidden', background: C.bg }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 260px', height: '100vh', overflow: 'hidden', background: C.bg }}>
         {/* Left: Queue */}
         <div style={{ background: C.sf, borderRight: `1px solid ${C.bd}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.bd}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -841,7 +846,7 @@ export default function DialerPage() {
 
   if (phase === 'PAUSED') {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 56px)', padding: 32, textAlign: 'center', background: C.bg }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: 32, textAlign: 'center', background: C.bg }}>
         {ErrorBanner}
         <div style={{ fontSize: 13, fontWeight: 600, color: C.t3, textTransform: 'uppercase', marginBottom: 8 }}>Dialer paused</div>
         <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 6 }}>{selectedCampaign.name}</div>
@@ -856,7 +861,7 @@ export default function DialerPage() {
 
   if (phase === 'COMPLETE') {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 56px)', padding: 32, textAlign: 'center', background: C.bg }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: 32, textAlign: 'center', background: C.bg }}>
         <div style={{ width: 72, height: 72, borderRadius: '50%', background: C.gD, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
           <I s={32} k={C.grn}><polyline points="20 6 9 17 4 12" /></I>
         </div>
