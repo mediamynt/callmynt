@@ -200,6 +200,8 @@ export default function DialerPage() {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
+      const tag = (event.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (event.target as HTMLElement)?.isContentEditable) return;
       if (event.key.toLowerCase() === 'p' && phase === 'CONNECTED') {
         event.preventDefault();
         setShowDialpad((value) => !value);
