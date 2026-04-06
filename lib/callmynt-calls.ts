@@ -160,7 +160,9 @@ export async function getCallerIdForCourse(course: CallCourse, campaign?: Campai
 export async function loadCampaignQueue(campaignId: string) {
   const supabase = createServerClient();
 
-  // Get courses that were already called today (have a call record with a disposition)
+  // Get courses that should be excluded:
+  // 1. Already called today with a disposition
+  // 2. Ever dispositioned as "Not interested" or "Bad #" (permanent exclusion)
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const { data: todayCalls } = await supabase
@@ -169,7 +171,14 @@ export async function loadCampaignQueue(campaignId: string) {
     .eq('campaign_id', campaignId)
     .not('disposition', 'is', null)
     .gte('created_at', todayStart.toISOString());
-  const calledCourseIds = new Set((todayCalls || []).map((c: { course_id: string }) => c.course_id));
+  const { data: permanentExcludes } = await supabase
+    .from('calls')
+    .select('course_id')
+    .in('disposition', ['Not interested', 'Bad #', 'Do not call']);
+  const calledCourseIds = new Set([
+    ...(todayCalls || []).map((c: { course_id: string }) => c.course_id),
+    ...(permanentExcludes || []).map((c: { course_id: string }) => c.course_id),
+  ]);
 
   const queueResult = await supabase
     .from('campaign_queue')
